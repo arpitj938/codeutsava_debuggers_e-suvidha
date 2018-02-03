@@ -53,6 +53,8 @@ def get_review(request):
 	try:
 		lattitude = str(request.POST.get("latitude"))
 		longitude=str(request.POST.get("longitude"))
+		print lattitude
+		print longitude
 		infrastructure = float(request.POST.get("infrastructure"))
 		safety = float(request.POST.get("safety"))
 		hygiene = float(request.POST.get("hygiene"))
@@ -60,8 +62,9 @@ def get_review(request):
 		review = str(request.POST.get("review"))
 		feedback = str(request.POST.get("feedback"))
 		# name = request.POST.get("name")
-		print name
+		# print name
 		try:
+			print str(request.FILES.get('file'))
 			image=request.FILES.get('file').name
 			this_refrence_id=str(int(review_data.objects.all().last().review_id)+1)
 			while True:
@@ -76,6 +79,7 @@ def get_review(request):
 			# print "full name",full_filename
 			#fout = open(folder+image, 'wb+')
 			print "image=",image
+			image = this_refrence_id+"/"+image
 			fout = open(folder+image, 'w')
 			file_content = request.FILES.get('file').read()
 			#for chunk in file_content.chunks():
@@ -93,6 +97,9 @@ def get_review(request):
 		# review = "bad"
 		# feedback = "do something"
 		try:
+			lattitude = lattitude.split('"')[1]
+			longitude = longitude.split('"')[1]
+			print lattitude
 			location_obj = location_data.objects.get(lattitude=lattitude,longitude=longitude)
 			location_id = int(location_obj.location_id)
 			previous_infra = float(location_obj.infrastructure)
@@ -118,9 +125,14 @@ def get_review(request):
 			setattr(location,"bad_count",bad_count)
 			setattr(location,"overall",new_overall)
 			location.save()
-			review_object = review_data.objects.create(location_id=int(location_id),infrastructure=infrastructure,hygiene=hygiene,
-				safety=safety,overall=overall,review=review,feedback=feedback,images=image)
-			review_object.save()
+			try:
+				review_object = review_data.objects.create(location_id=int(location_id),infrastructure=infrastructure,hygiene=hygiene,
+					safety=safety,overall=overall,review=review,feedback=feedback,image=image)
+				review_object.save()
+			except:
+				review_object = review_data.objects.create(location_id=int(location_id),infrastructure=infrastructure,hygiene=hygiene,
+					safety=safety,overall=overall,review=review,feedback=feedback)
+				review_object.save()
 		except Exception,e:
 			print e,"get_review"
 	except Exception ,e:
@@ -131,36 +143,40 @@ def get_review(request):
 
 @csrf_exempt
 def send_review(request):
-	latitude = str(request.POST.get("latitude"))
-	longitude = str(request.POST.get("longitude"))
-	# latitude = "21.248471"	
-	# longitude = "81.579622"
-	location_row = location_data.objects.get(lattitude=latitude,longitude=longitude)
-	response_json = {}
-	temp_json = {}
-	temp_json["hygiene"] = location_row.hygiene
-	temp_json["infrastructure"] = location_row.infrastructure
-	temp_json["overall"] = location_row.overall
-	temp_json["safety"] = location_row.safety
-	temp_json["reviews"] = []
-	for o in review_data.objects.filter(location_id=location_row.location_id):
-		review_string = str(o.review)
-		temp_json["reviews"].append(review_string)
-	temp_json["images"] = []
-	url =  str(request.scheme+'://'+request.get_host()+'/media')
-	for o  in images_data.objects.all():
-		# print "in image"
-		if(str(o.location_id)==str(location_row.location_id)):
-			# print str(o.image_url)
-			temp_json["images"].append(url+'/'+str(o.image_url))
-	# temp_json["images"].append("https://wallpaperbrowse.com/media/images/5611472-simple-images.png")
-	# temp_json["images"].append("http://milewalk.com/wp-content/uploads/2014/07/Keep-it-simple.jpg")
-	# temp_json["images"].append("https://t4.ftcdn.net/jpg/01/21/84/15/240_F_121841507_k8yG2UdVD6kmrBUWjpXWnHS7bVHd9Ydk.jpg")
-	response_json["data"] = temp_json
-	response_json["success"] = True
-	response_json["message"] = "All data sent"
-	print str(response_json)
-	return HttpResponse(str(response_json))
+	try:
+		latitude = str(request.POST.get("latitude"))
+		longitude = str(request.POST.get("longitude"))
+		# latitude = "21.248471"	
+		# longitude = "81.579622"
+		location_row = location_data.objects.get(lattitude=latitude,longitude=longitude)
+		response_json = {}
+		temp_json = {}
+		temp_json["hygiene"] = location_row.hygiene
+		temp_json["infrastructure"] = location_row.infrastructure
+		temp_json["overall"] = location_row.overall
+		temp_json["safety"] = location_row.safety
+		temp_json["reviews"] = []
+		for o in review_data.objects.filter(location_id=location_row.location_id):
+			review_string = str(o.review)
+			temp_json["reviews"].append(review_string)
+		temp_json["images"] = []
+		url =  str(request.scheme+'://'+request.get_host()+'/media')
+		for o  in images_data.objects.all():
+			# print "in image"
+			if(str(o.location_id)==str(location_row.location_id)):
+				# print str(o.image_url)
+				temp_json["images"].append(url+'/'+str(o.image_url))
+		# temp_json["images"].append("https://wallpaperbrowse.com/media/images/5611472-simple-images.png")
+		# temp_json["images"].append("http://milewalk.com/wp-content/uploads/2014/07/Keep-it-simple.jpg")
+		# temp_json["images"].append("https://t4.ftcdn.net/jpg/01/21/84/15/240_F_121841507_k8yG2UdVD6kmrBUWjpXWnHS7bVHd9Ydk.jpg")
+		response_json["data"] = temp_json
+		response_json["success"] = True
+		response_json["message"] = "All data sent"
+		print str(response_json)
+		return HttpResponse(str(response_json))
+	except Exception,e:
+		response_json["success"] = False
+		response_json["message"] = "Some problem occur"
 
 
 

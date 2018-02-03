@@ -29,8 +29,8 @@ def near_location_json(request):
 		temp_json = {}
 		temp_json["name"] = str(o.location_name)
 		temp_json["address"] = str(o.location_address)
-		temp_json["m"] = float(o.m)
-		temp_json["f"] = float(o.f)
+		temp_json["m"] = str(o.m)
+		temp_json["f"] = str(o.f)
 		temp_json["hours"] = str(o.hours)
 		temp_json["latitude"] = float(o.lattitude)
 		temp_json["longitude"] = float(o.longitude)

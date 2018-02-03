@@ -18,13 +18,15 @@ from django.conf.urls import url
 from django.contrib import admin
 from review.views import open_index,get_review,send_review
 from location.views import near_location_json
+from analysis.views import usage_graph
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', open_index),
+    url(r'^$', usage_graph),
     url(r'^get_review$', get_review),
     url(r'^send_review$', send_review),
     url(r'^near_location$', near_location_json),
+    url(r'^usage$', usage_graph),
 ]
 
 admin.site.site_header = "Sulabh"
