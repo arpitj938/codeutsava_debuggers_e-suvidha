@@ -18,7 +18,7 @@ from django.conf.urls import url
 from django.contrib import admin
 from review.views import open_index,get_review,send_review
 from location.views import near_location_json
-from analysis.views import usage_graph
+from analysis.views import usage_graph,date_graph
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^send_review$', send_review),
     url(r'^near_location$', near_location_json),
     url(r'^usage$', usage_graph),
+    url(r'^date$', date_graph),
 ]
 
 admin.site.site_header = "Sulabh"

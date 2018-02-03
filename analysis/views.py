@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from plotly.offline import plot
 from plotly.graph_objs import Scatter,Layout,Line,Bar
 import plotly.graph_objs as go
+import datetime
 
 
 @csrf_exempt
@@ -58,11 +59,39 @@ def usage_graph(request):
 		y_infrastructure_array.append(float(o.infrastructure))
 		i=i+1
 	linegraph = make_line_graph(x_array,y_overall_array,y_hygiene_array,y_infrastructure_array)
-	return render(request,'index1.html',{'link1':str(linegraph)})	
+	return render(request,'index1.html',{'link1':str(linegraph),'heading':"Review Rating Graph"})	
 	# response_json["success"] = True
 	# response_json["message"] = "All data included"
 	# print str(response_json)
 	# return HttpResponse(str(response_json))
+def date_graph(request):
+	# location_id = request.POST.get('location')
+	# start_date = request.POST.get('start_date')
+	# end_data = request.POST.get('end_date')
+	location_id = 4
+	start_date = datetime.date(2018, 01, 03)
+	print start_date
+	end_date = datetime.date(2018, 02, 04)
+	print (end_date-start_date).days
+	count = []
+	x_array = []
+	if(start_date==end_date):
+		for o in range(0,24):
+			count.append(0)
+			x_array.append(o)
+		for o in review_data.objects.all():
+			count[o.time.hour] = count[o.time.hour] + 1
+		print count
+	else:
+		for o in range(0,(end_date-start_date).days):
+			count.append(0)
+			x_array.append(o)
+		for o in review_data.objects.all():
+			count[(start_date-o.date).days] = count[(start_date-o.date).days] +1
+		print count
+	bargraph = make_bar_graph(x_array,count)
+	return render(request,'index1.html',{'link1':str(bargraph),'heading':"Usage Graph"})
+		# hourgraph = make_hour_graph()
 
 
 # Create your views here.
