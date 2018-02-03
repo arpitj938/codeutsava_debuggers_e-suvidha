@@ -1,0 +1,29 @@
+from django.core.mail import EmailMessage,get_connection
+from custom_key.models import *
+from django.core.mail.backends.smtp import EmailBackend
+from .models import *
+
+
+def send_mail(email,msg,sub):
+	host=custom_key_data.objects.get(key='host').value
+	print host
+	port=custom_key_data.objects.get(key='port').value
+	username=custom_key_data.objects.get(key='username').value
+	password=custom_key_data.objects.get(key='password').value
+	backend = EmailBackend(host=str(host), port=int(port), username=str(username),
+		password=str(password), use_tls=True, fail_silently=True)
+	email_msg= EmailMessage(sub,msg,'no-reply@gmail.com',bcc=email,connection=backend)
+	email_msg.send()
+
+def alertincharge(location_id):
+	try:
+		incharge = incharge_data.objects.get(location_id=location_id)
+		incharge_name = incharge.incharge_name
+		incharge_email = incharge.incharge_email
+		msg = email_key_data.objects.get(key="email_alert")
+		location_name = str(location_data.objects.get(location_id=location_id).location_name)
+		msg = msg %(location_name)
+		sub = "Problem in "+ location_name 
+		send_mail(incharge_email,msg,sub)
+	except Exception ,e:
+		print e
