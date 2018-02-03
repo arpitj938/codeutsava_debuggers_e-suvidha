@@ -159,6 +159,8 @@ def send_review(request):
 		for o in review_data.objects.filter(location_id=location_row.location_id):
 			review_string = str(o.review)
 			temp_json["reviews"].append(review_string)
+		temp_json["reviews"] = temp_json["reviews"][:15]
+		temp_json["reviews"] = temp_json["reviews"][::-1]
 		temp_json["images"] = []
 		url =  str(request.scheme+'://'+request.get_host()+'/media')
 		for o  in images_data.objects.all():
