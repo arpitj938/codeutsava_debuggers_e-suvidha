@@ -20,4 +20,11 @@ class location_data(models.Model):
 
 	def __str__(self):
 		return "%s" % (self.location_id)
+
+
+
+
+class images_data(models.Model):
+	location_id = models.ForeignKey(location_data,on_delete=models.CASCADE)
+	image_url = models.CharField(max_length=500,blank=True,null=True)
 # Create your models here.
