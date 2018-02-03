@@ -26,5 +26,5 @@ class location_data(models.Model):
 
 class images_data(models.Model):
 	location_id = models.ForeignKey(location_data,on_delete=models.CASCADE)
-	image_url = models.CharField(max_length=500,blank=True,null=True)
+	image_url = models.ImageField(upload_to='media/',default="media/default.img")
 # Create your models here.

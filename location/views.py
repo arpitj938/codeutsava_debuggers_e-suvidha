@@ -1,15 +1,19 @@
 from django.shortcuts import render
 from .models import *
 from django.http import HttpResponse, HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
+@csrf_exempt
 def near_location_json(request):
-	# latitude = models.POST.get("latitude")
-	# longitude = models.POST.get("longitude")
-	latitude = 21.263775
-	longitude = 81.60574
-	latitude = float("{0:.2f}".format(latitude))
-	longitude = float("{0:.2f}".format(longitude))
+	latitude = str(request.POST.get("latitude"))
+	print latitude
+	longitude = str(request.POST.get("longitude"))
+	print longitude
+	# latitude = 21.263775
+	# longitude = 81.60574
+	latitude = float(round(float(latitude),2))
+	longitude = float(round(float(longitude),2))
 	print latitude
 	print longitude
 	locations_rows = location_data.objects.all()
@@ -25,12 +29,12 @@ def near_location_json(request):
 		temp_json = {}
 		temp_json["name"] = str(o.location_name)
 		temp_json["address"] = str(o.location_address)
-		temp_json["m"] = o.m
-		temp_json["f"] = o.f
+		temp_json["m"] = float(o.m)
+		temp_json["f"] = float(o.f)
 		temp_json["hours"] = str(o.hours)
-		temp_json["latitude"] = o.lattitude
-		temp_json["longitude"] = o.longitude
-		temp_json["overall"] = o.overall
+		temp_json["latitude"] = float(o.lattitude)
+		temp_json["longitude"] = float(o.longitude)
+		temp_json["overall"] = str(o.overall)
 		response_json["data"].append(temp_json)
 	response_json["success"] = True
 	response_json["message"] = "All nearby data sent"

@@ -7,6 +7,8 @@ from custom_key.models import *
 from django.core.mail.backends.smtp import EmailBackend
 from .models import *
 from incharge.models import *
+import os
+from location.models import *
 
 def send_mail(email,msg,sub):
 	host=custom_key_data.objects.get(key='host').value
@@ -57,8 +59,33 @@ def get_review(request):
 		overall = float(request.POST.get("overall"))
 		review = str(request.POST.get("review"))
 		feedback = str(request.POST.get("feedback"))
-		# lattitude = "lat"
-		# longitude="long"
+		# name = request.POST.get("name")
+		print name
+		try:
+			image=request.FILES.get('file').name
+			this_refrence_id=str(int(review_data.objects.all().last().review_id)+1)
+			while True:
+				try:
+					folder = 'media/'+this_refrence_id+'/'
+					os.mkdir(os.path.join(folder))
+					break
+				except Exception,e:
+					print e
+					this_refrence_id=str(int(this_refrence_id)+1)
+			# full_filename = os.path.join(folder, image)
+			# print "full name",full_filename
+			#fout = open(folder+image, 'wb+')
+			print "image=",image
+			fout = open(folder+image, 'w')
+			file_content = request.FILES.get('file').read()
+			#for chunk in file_content.chunks():
+			fout.write(file_content)
+			fout.close()
+		except Exception,e:
+			print e
+			pass
+		# lattitude = "21.244003"
+		# longitude="81.617268"
 		# infrastructure = 1.0
 		# safety = 1.0
 		# hygiene = 1.0
@@ -92,7 +119,7 @@ def get_review(request):
 			setattr(location,"overall",new_overall)
 			location.save()
 			review_object = review_data.objects.create(location_id=int(location_id),infrastructure=infrastructure,hygiene=hygiene,
-				safety=safety,overall=overall,review=review,feedback=feedback)
+				safety=safety,overall=overall,review=review,feedback=feedback,images=image)
 			review_object.save()
 		except Exception,e:
 			print e,"get_review"
@@ -106,8 +133,8 @@ def get_review(request):
 def send_review(request):
 	latitude = str(request.POST.get("latitude"))
 	longitude = str(request.POST.get("longitude"))
-	# latitude = "lat"
-	# longitude = "long"
+	# latitude = "21.248471"	
+	# longitude = "81.579622"
 	location_row = location_data.objects.get(lattitude=latitude,longitude=longitude)
 	response_json = {}
 	temp_json = {}
@@ -120,9 +147,15 @@ def send_review(request):
 		review_string = str(o.review)
 		temp_json["reviews"].append(review_string)
 	temp_json["images"] = []
-	temp_json["images"].append("https://wallpaperbrowse.com/media/images/5611472-simple-images.png")
-	temp_json["images"].append("http://milewalk.com/wp-content/uploads/2014/07/Keep-it-simple.jpg")
-	temp_json["images"].append("https://t4.ftcdn.net/jpg/01/21/84/15/240_F_121841507_k8yG2UdVD6kmrBUWjpXWnHS7bVHd9Ydk.jpg")
+	url =  str(request.scheme+'://'+request.get_host()+'/media')
+	for o  in images_data.objects.all():
+		# print "in image"
+		if(str(o.location_id)==str(location_row.location_id)):
+			# print str(o.image_url)
+			temp_json["images"].append(url+'/'+str(o.image_url))
+	# temp_json["images"].append("https://wallpaperbrowse.com/media/images/5611472-simple-images.png")
+	# temp_json["images"].append("http://milewalk.com/wp-content/uploads/2014/07/Keep-it-simple.jpg")
+	# temp_json["images"].append("https://t4.ftcdn.net/jpg/01/21/84/15/240_F_121841507_k8yG2UdVD6kmrBUWjpXWnHS7bVHd9Ydk.jpg")
 	response_json["data"] = temp_json
 	response_json["success"] = True
 	response_json["message"] = "All data sent"

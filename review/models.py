@@ -14,6 +14,7 @@ class review_data(models.Model):
 	feedback = models.TextField(blank=True,null=True)
 	date = models.DateField(auto_now_add=True)
 	time = models.TimeField(auto_now_add=True)
+	image = models.ImageField(upload_to = 'media/',default="media/default.jpg")
 
 
 # Create your models here.

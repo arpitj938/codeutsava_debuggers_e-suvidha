@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'incharge',
     'custom_key',
     'tinymce',
+    'analysis',
 ]
 
 MIDDLEWARE_CLASSES = [
