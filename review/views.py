@@ -143,13 +143,15 @@ def get_review(request):
 
 @csrf_exempt
 def send_review(request):
+	response_json = {}
 	try:
 		latitude = str(request.POST.get("latitude"))
 		longitude = str(request.POST.get("longitude"))
+		print latitude
+		print longitude
 		# latitude = "21.248471"	
 		# longitude = "81.579622"
 		location_row = location_data.objects.get(lattitude=latitude,longitude=longitude)
-		response_json = {}
 		temp_json = {}
 		temp_json["hygiene"] = location_row.hygiene
 		temp_json["infrastructure"] = location_row.infrastructure
@@ -177,8 +179,11 @@ def send_review(request):
 		print str(response_json)
 		return HttpResponse(str(response_json))
 	except Exception,e:
+		print e
 		response_json["success"] = False
 		response_json["message"] = "Some problem occur"
+		print str(response_json)
+		return HttpResponse(str(response_json))
 
 
 

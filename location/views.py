@@ -18,10 +18,10 @@ def near_location_json(request):
 	print longitude
 	locations_rows = location_data.objects.all()
 	row = []
-	for o in locations_rows:
-		if((latitude + 0.01 == float(round(float(o.lattitude),2))) or (latitude - 0.01 == float(round(float(o.lattitude),2)))):
-			if((longitude + 0.01 == float(round(float(o.longitude),2))) or (longitude - 0.01 == float(round(float(o.longitude),2)))):
-				row.append(o)
+	for o in locations_rows.all():
+		# if((latitude + 0.01 == float(round(float(o.lattitude),2))) or (latitude - 0.01 == float(round(float(o.lattitude),2)))):
+		# 	if((longitude + 0.01 == float(round(float(o.longitude),2))) or (longitude - 0.01 == float(round(float(o.longitude),2)))):
+		row.append(o)
 	# rows = [o for o in locations_rows if  (((latitude + 0.01) == float(round(o.latitude, 2)) OR  ((latitude- 0.01) == float(round(o.latitude, 2)))) AND ((longitude+0.01) == float(round(o.longitude, 2)) OR (longitude- 0.01) == float(round(o.longitude, 2)))) ]
 	response_json = {}
 	response_json["data"] =[]
@@ -36,6 +36,7 @@ def near_location_json(request):
 		temp_json["longitude"] = float(o.longitude)
 		temp_json["overall"] = str(o.overall)
 		response_json["data"].append(temp_json)
+	response_json["data"] = response_json["data"][:10]
 	response_json["success"] = True
 	response_json["message"] = "All nearby data sent"
 	print str(response_json)

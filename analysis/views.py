@@ -43,10 +43,8 @@ def make_bar_graph(x_array,y_array):
 	graph_str=plot([Bar(x=x_array, y=y_array)],auto_open=False,output_type='div')
 	return graph_str
 
-def usage_graph(request):
-	# location_id = request.POST.get('location')
-	location_id = 4
-	response_json = {}
+def usage_graph(request,value):
+	location_id = int(value)
 	x_array = []
 	y_overall_array=[]
 	y_infrastructure_array=[]
@@ -60,18 +58,27 @@ def usage_graph(request):
 		i=i+1
 	linegraph = make_line_graph(x_array,y_overall_array,y_hygiene_array,y_infrastructure_array)
 	return render(request,'index1.html',{'link1':str(linegraph),'heading':"Review Rating Graph"})	
-	# response_json["success"] = True
-	# response_json["message"] = "All data included"
-	# print str(response_json)
-	# return HttpResponse(str(response_json))
-def date_graph(request):
-	# location_id = request.POST.get('location')
-	# start_date = request.POST.get('start_date')
-	# end_data = request.POST.get('end_date')
+
+@csrf_exempt
+def usage_post_graph(request):
+	location_id = request.POST.get('id')
 	location_id = 4
-	start_date = datetime.date(2018, 01, 03)
+	response_json = {}
+	response_json["url"] = 'usage'+'/'+str(location_id)
+	print str(response_json)
+	return HttpResponse(str(response_json))
+
+
+def date_graph(request,value):
+	url = value.split('_')
+	location_id = url[0]
+	start_date = url[1]
+	end_date = url[2]
+	start_date = start_date.split("-")
+	end_date = end_date.split("-")
+	start_date = datetime.date(int(start_date[0]), int(start_date[1]), int(start_date[2]))
 	print start_date
-	end_date = datetime.date(2018, 02, 04)
+	end_date = datetime.date(int(end_date[0]), int(end_date[1]), int(end_date[2]))
 	print (end_date-start_date).days
 	count = []
 	x_array = []
@@ -91,7 +98,61 @@ def date_graph(request):
 		print count
 	bargraph = make_bar_graph(x_array,count)
 	return render(request,'index1.html',{'link1':str(bargraph),'heading':"Usage Graph"})
+
+
+@csrf_exempt
+def date_post_graph(request):
+	# location_id = request.POST.get('id')
+	# start_date = request.POST.get('start_date')
+	# end_date  = request.POST.get('end_date')
+	location_id = 4
+	start_date = "2018-01-12"
+	end_date = "2018-02-10"
+	response_json = {}
+	response_json["url"] = 'date'+'/'+str(location_id)+'_'+str(start_date)+'_'+str(end_date)
+	print str(response_json)
+	return HttpResponse(str(response_json))
 		# hourgraph = make_hour_graph()
+
+def send_all_location(request):
+	response_json = {}
+	try:
+		response_json["data"] = []
+		for o in location_data.objects.all():
+			temp_json = {}
+			temp_json["location_id"] = o.location_id
+			temp_json["location_name"] = str(o.location_name)
+			temp_json["location_address"] = str(o.location_address)
+			temp_json["images"] = ""
+			url =  str(request.scheme+'://'+request.get_host()+'/media')
+			print url
+			try:
+				temp_json["image"] = url+'/'+str(((images_data.objects.filter(location_id=o.location_id))[0]).image_url)
+				print temp_json["image"]
+				# temp_json["images"].append(url+'/'+i.image_url)
+			except Exception,e:
+				print e
+				pass
+			response_json["data"].append(temp_json)
+		print str(response_json)
+		response_json["success"] = True
+		response_json["message"] = "All location data sent"
+		return HttpResponse(str(response_json))
+	except Exception,e:
+		print e
+		response_json["success"] = False
+		response_json["message"] = "Some error occured"
+		print str(response_json)
+		return HttpResponse(str(response_json))
+
+
+# def nlp():
+# 	for o in review_data_objects.all():
+# 		if(o.overall<2):
+			
+
+
+ 
 
 
 # Create your views here.
