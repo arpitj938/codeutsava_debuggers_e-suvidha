@@ -19,10 +19,11 @@ from django.contrib import admin
 from review.views import open_index,get_review,send_review
 from location.views import near_location_json
 from analysis.views import usage_graph,date_graph,send_all_location,usage_post_graph,date_graph,usage_post_graph,date_post_graph
+from user_data.views import login,forgot_password
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', usage_graph),
     url(r'^get_review$', get_review),
     url(r'^send_review$', send_review),
     url(r'^near_location$', near_location_json),
@@ -31,6 +32,8 @@ urlpatterns = [
     url(r'^send_all_location$', send_all_location),
     url(r'^usage_post_graph$', usage_post_graph),
     url(r'^date_post_graph$', date_post_graph),
+    url(r'^login$', login),
+    url(r'^forgot$', forgot_password),
 
 
 ]

@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'custom_key',
     'tinymce',
     'analysis',
+    'nlp',
+    'user_data'
 ]
 
 MIDDLEWARE_CLASSES = [

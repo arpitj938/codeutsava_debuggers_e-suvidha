@@ -7,8 +7,6 @@ from plotly.graph_objs import Scatter,Layout,Line,Bar
 import plotly.graph_objs as go
 import datetime
 
-
-@csrf_exempt
 # def usage_graph(request):
 # 	# location_id = request.POST.get('location_id')
 # 	location_id = 4
@@ -62,7 +60,7 @@ def usage_graph(request,value):
 @csrf_exempt
 def usage_post_graph(request):
 	location_id = request.POST.get('id')
-	location_id = 4
+	# location_id = 4
 	response_json = {}
 	response_json["url"] = 'usage'+'/'+str(location_id)
 	print str(response_json)
@@ -102,28 +100,29 @@ def date_graph(request,value):
 
 @csrf_exempt
 def date_post_graph(request):
-	# location_id = request.POST.get('id')
-	# start_date = request.POST.get('start_date')
-	# end_date  = request.POST.get('end_date')
-	location_id = 4
-	start_date = "2018-01-12"
-	end_date = "2018-02-10"
+	location_id = request.POST.get('id')
+	start_date = request.POST.get('start_date')
+	end_date  = request.POST.get('end_date')
+	# location_id = 4
+	# start_date = "2018-01-12"
+	# end_date = "2018-02-10"
 	response_json = {}
 	response_json["url"] = 'date'+'/'+str(location_id)+'_'+str(start_date)+'_'+str(end_date)
 	print str(response_json)
 	return HttpResponse(str(response_json))
 		# hourgraph = make_hour_graph()
 
+@csrf_exempt
 def send_all_location(request):
 	response_json = {}
 	try:
-		response_json["data"] = []
+		response_json["locationList"] = []
 		for o in location_data.objects.all():
 			temp_json = {}
-			temp_json["location_id"] = o.location_id
-			temp_json["location_name"] = str(o.location_name)
-			temp_json["location_address"] = str(o.location_address)
-			temp_json["images"] = ""
+			temp_json["id"] = o.location_id
+			temp_json["name"] = str(o.location_name)
+			temp_json["address"] = str(o.location_address)
+			temp_json["image"] = ""
 			url =  str(request.scheme+'://'+request.get_host()+'/media')
 			print url
 			try:
@@ -133,7 +132,7 @@ def send_all_location(request):
 			except Exception,e:
 				print e
 				pass
-			response_json["data"].append(temp_json)
+			response_json["locationList"].append(temp_json)
 		print str(response_json)
 		response_json["success"] = True
 		response_json["message"] = "All location data sent"
@@ -149,7 +148,7 @@ def send_all_location(request):
 # def nlp():
 # 	for o in review_data_objects.all():
 # 		if(o.overall<2):
-			
+
 
 
  
