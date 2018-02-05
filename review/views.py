@@ -79,7 +79,7 @@ def get_review(request):
 			# print "full name",full_filename
 			#fout = open(folder+image, 'wb+')
 			print "image=",image
-			image = this_refrence_id+"/"+image
+			image = "/"+image
 			fout = open(folder+image, 'w')
 			file_content = request.FILES.get('file').read()
 			#for chunk in file_content.chunks():
@@ -97,8 +97,8 @@ def get_review(request):
 		# review = "bad"
 		# feedback = "do something"
 		try:
-			lattitude = lattitude.split('"')[1]
-			longitude = longitude.split('"')[1]
+			lattitude = float(lattitude.split('"')[1])
+			longitude = float(longitude.split('"')[1])
 			print lattitude
 			location_obj = location_data.objects.get(lattitude=lattitude,longitude=longitude)
 			location_id = int(location_obj.location_id)
@@ -151,7 +151,7 @@ def send_review(request):
 		print longitude
 		# latitude = "21.248471"	
 		# longitude = "81.579622"
-		location_row = location_data.objects.get(lattitude=latitude,longitude=longitude)
+		location_row = location_data.objects.get(lattitude=float(latitude),longitude=float(longitude))
 		temp_json = {}
 		temp_json["hygiene"] = location_row.hygiene
 		temp_json["infrastructure"] = location_row.infrastructure

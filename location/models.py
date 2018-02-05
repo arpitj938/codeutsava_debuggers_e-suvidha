@@ -13,6 +13,7 @@ class location_data(models.Model):
 	safety = models.FloatField(blank=True,null = True,default=0)
 	m = models.IntegerField(default=1)
 	f = models.IntegerField(default=1)
+	d = models.IntegerField(default=1)
 	hours = models.CharField(max_length=300,default="5AM 10PM")
 	overall = models.FloatField(blank= True,null=True,default=0)
 	review_count = models.IntegerField(default=0)
